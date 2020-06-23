@@ -30,7 +30,7 @@ The course is compiled with make (when no containers are used).
 
 The tools can be added into a repository as a submodule.
 
-    git submodule add https://github.com/Aalto-LeTech/a-plus-rst-tools.git a-plus-rst-tools
+    git submodule add https://github.com/apluslms/a-plus-rst-tools.git a-plus-rst-tools
     git submodule init
     git submodule update
 
@@ -200,7 +200,7 @@ The keys for the A+ course settings are listed below:
 ```
 
 Some fields require a value from specific choices (see also
-[the MOOC-grader documentation about the index.yaml file](https://github.com/Aalto-LeTech/mooc-grader/blob/master/courses/README.md)):
+[the MOOC-grader documentation about the index.yaml file](https://github.com/apluslms/mooc-grader/blob/master/courses/README.md)):
 
 * `view-content-to`: enrolled, enrollment_audience, all_registered, public
 * `enrollment-audience`: internal, external, all
@@ -503,7 +503,7 @@ It accepts the following options:
 * `status`: exercise status (default "unlisted"). See available [statuses](#list-of-exercise-statuses).
 * `ajax`: If set, the A+ chapter does not attach any JavaScript event listeners
   to the exercise and the exercise JS may control the submission itself.
-  See [the chapter content documentation](https://github.com/Aalto-LeTech/a-plus/blob/master/doc/CONTENT.md)
+  See [the chapter content documentation](https://github.com/apluslms/a-plus/blob/master/doc/CONTENT.md)
   (the HTML attribute `data-aplus-ajax`).
 * `allow-assistant-viewing`: Allows assistants to view the submissions of the students.
   Can be set to true or false. Overrides any options set in the conf.py or config.yaml files.
@@ -513,7 +513,7 @@ It accepts the following options:
   This makes sense for questionnaires since their feedback contains the submission form.
   In RST, you would usually define questionnaires with the questionnaire directive,
   but they can also be defined in a YAML file.
-  See [the chapter content documentation](https://github.com/Aalto-LeTech/a-plus/blob/master/doc/CONTENT.md)
+  See [the chapter content documentation](https://github.com/apluslms/a-plus/blob/master/doc/CONTENT.md)
   (the HTML attribute `data-aplus-quiz`).
 * `url`: the service URL of the exercise. Use this if the URL must, for example,
   refer to another server.
@@ -564,12 +564,14 @@ In LTI excercises, the instructions cannot be written in the body of the submit 
 
 ### 5. Meta (exercise round settings)
 
-The meta directive is used to define module (exercise round) settings.
+The aplusmeta directive is used to define module (exercise round) settings.
 It should be defined in the RST file that defines the `toctree` of the module
-(module index). Furthermore, it may be used in chapters to hide them (i.e., set status hidden)
-with the `hidden` option or to set the chapter audience with the `audience` option.
+(module index). Furthermore, it may be used in chapters to hide them (i.e., set
+status hidden) with the `hidden` option or to set the chapter audience with the
+`audience` option.
 
-The meta directive does not have any content and it accepts the following options:
+The aplusmeta directive does not have any content. It accepts the following
+options:
 
 * `open-time`: module open time, e.g., 2019-01-31 23:59:00 (the time defaults to 12:00 if excluded)
 * `close-time`: module close time
@@ -580,6 +582,61 @@ The meta directive does not have any content and it accepts the following option
 * `points-to-pass`: module points to pass
 * `introduction`: module introduction as an HTML string
 
+Example module index.rst file:
+
+```rst
+Module 1 - Introduction
+=======================
+
+.. toctree::
+
+  introduction
+  topic
+
+.. aplusmeta::
+  :open-time: 2020-09-01 10:00
+  :close-time: 2020-09-30 14:00
+```
+
+Alternatively, one can also define these options in the conf.py file of the
+course in the following way.
+
+1. Include the aplusmeta directive in the `extensions` part of conf.py. Its
+   extension name is 'meta'.
+
+```python
+    extensions = [
+        ...
+        'meta',
+        ...
+    ]
+```
+
+2. Add the `aplusmeta_substitutions` variable in the conf.py file.
+
+```python
+    aplusmeta_substitutions = {
+        'open01': '2020-09-10 10:01'
+    }
+```
+
+This variable is a dictionary where keys are strings and values are dates
+in the usual format (see above). In the example above, you have defined a
+shortcut text "open01" for date "2020-09-10 10:01".
+
+3. Use the shortcut texts in the aplusmeta directive in a module index.rst:
+
+```rst
+    .. aplusmeta::
+      :open-time: open01
+      :close-time: 2019-09-20 12:00
+      :late-time: 2019-12-20 09:00
+```
+
+4. When the course is compiled, the aplusmeta directive looks for substitution
+strings in the `aplusmeta_substitutions` dictionary. The substitutions can be
+named freely as long as they are not RST markup (e.g. '|open01|' will not
+work). The substitutions can be used with any option of the meta directive.
 
 ### 6. Active element input
 
